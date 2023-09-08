@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->loadMigrationsFrom([
+            database_path('migrations'),
+            database_path('migrations/base')
+        ]);
+
         if($this->app->environment('production')) {
             \URL::forceScheme('https');
         }
