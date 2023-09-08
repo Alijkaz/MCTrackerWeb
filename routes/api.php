@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\API\IndexServersController;
+use App\Http\Controllers\API\ShowServerController;
+use App\Http\Controllers\API\ShowServerVotesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('/servers')->name('servers.')->group(function () {
+    Route::get('/', IndexServersController::class)->name('index');
+    Route::get('/{server}', [ShowServerController::class, 'stats'])->name('show');
+    Route::get('/{server}/favicon', [ShowServerController::class, 'favicon'])->name('favicon');
+    Route::get('/{server}/votes', ShowServerVotesController::class)->name('show');
 });

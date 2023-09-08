@@ -11,7 +11,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class TrackJob implements ShouldQueue, ShouldBeUnique
 {
@@ -41,6 +40,14 @@ class TrackJob implements ShouldQueue, ShouldBeUnique
     private function updateServer(Server $server, ?ServerStats $serverStats): void
     {
         $date = now()->startOfMinute()->timestamp;
+
+        // TODO update/insert all in a single query
+
+        $serverUpdateContext = ['gamemodes' => json_encode($serverStats?->getGameModes() ?? [])];
+        if ($server->up_from < 0) {
+            $serverUpdateContext['up_from'] = time();
+        }
+        $server->update($serverUpdateContext);
 
         $server->records()->create([
             'players' => $serverStats?->getPlayers(),

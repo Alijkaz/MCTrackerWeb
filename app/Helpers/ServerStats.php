@@ -2,9 +2,12 @@
 
 namespace App\Helpers;
 
+use App\Models\GameMode;
 use App\Models\Server;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use JJG\Ping;
 use xPaw\MinecraftPing;
 
 /**
@@ -13,42 +16,96 @@ use xPaw\MinecraftPing;
 class ServerStats
 {
     public function __construct(
-        private readonly string $host,
-        private readonly int    $port,
+        private string          $host,
+        private int             $port,
         private readonly int    $players,
         private readonly int    $maxPlayers,
         private readonly int    $latency,
         private readonly string $version,
         private readonly string $favIcon,
+        private readonly array  $gameModes,
         private readonly Server $server
     )
     {
     }
 
+    public static function resolveSRV(string $address): string
+    {
+        if(ip2long($address) !== false) {
+            return $address;
+        }
+
+        $record = @dns_get_record('_minecraft._tcp.' . $address, DNS_SRV);
+
+        if(empty($record)) {
+            return $address;
+        }
+
+        if(isset($record[0]['target'])) {
+            return $record[0]['target'];
+        }
+
+        return $address;
+    }
+
+    public static function extractGameModesFromQuery(?array $query, Collection $gameModes): array
+    {
+        $result = [];
+
+        foreach ($query['players']['sample'] as $line) {
+            $line = preg_replace('/§[A-Za-z1-9]/', '', $line['name']);
+
+            foreach ($gameModes as $gameMode) {
+                if (str($line)->contains($gameMode, true)) {
+                    $matches = [];
+                    preg_match_all('/\d+/', $line, $matches);
+                    $players = array_map('intval', $matches[0]);
+
+                    $result[strtolower($gameMode)] = array_sum($players);
+
+                    break;
+                }
+            }
+        }
+
+        return $result;
+    }
+
     public static function fetch(Server $server, int $retries = 3): ?ServerStats
     {
-        $ping = null;
+        $minecraftPing = null;
         $context = ['server' => $server->name];
         $result = null;
+        $gameModes = GameMode::query()->get('name')->pluck('name');
 
         try {
-            retry($retries, function () use ($server, &$ping, &$result) {
-                $ping = new MinecraftPing($server->address, 25565);
-                $query = $ping->Query();
+            retry($retries, function () use ($server, $gameModes, &$minecraftPing, &$result) {
+                $resolvedSrv = self::resolveSRV($server->address);
+
+                $latency = (new Ping($resolvedSrv, timeout: 3))->ping('fsockopen') ?? 0;
+
+                $minecraftPing = new MinecraftPing($server->address, 25565, 10);
+                $query = $minecraftPing->Query();
 
                 $context['query'] = $query;
 
-                $latency = 0; // TODO fix me
+                $online = $query['players']['online'];
+
+                // Will return count of online players if max players is negative or 0
+                $max = $query['players']['max'];
+                $max = $max <= 0 ? $online : $max;
+
+                $gameModes = self::extractGameModesFromQuery($query, $gameModes);
+
+                $result = new self($server->address, 25565, $online, $max, $latency, $query['version']['name'], $query['favicon'], $gameModes, $server);
 
                 Log::info('Tracking successful', $context);
-
-                $result = new self($server->address, 25565, $query['players']['online'], $query['players']['max'], $latency, $query['version']['name'], $query['favicon'], $server);
             }, 250);
         } catch (\Exception $exception) {
             Log::warning('Tracking server failed: ' . $exception->getMessage(), $context);
         }
 
-        $ping?->Close();
+        $minecraftPing?->Close();
 
         return $result;
     }
@@ -88,6 +145,11 @@ class ServerStats
         return $this->favIcon;
     }
 
+    public function getGameModes(): array
+    {
+        return $this->gameModes;
+    }
+
     public function getServer(): Server
     {
         return $this->server;
@@ -109,4 +171,5 @@ class ServerStats
 
         return null;
     }
+
 }

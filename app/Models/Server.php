@@ -45,6 +45,11 @@ class Server extends Model
         return $this->hasMany(Record::class,'server_id', 'id');
     }
 
+    public function currentRecord(): ?Record
+    {
+        return $this->records()->latest()->first();
+    }
+
     public function fetchStats(): ?ServerStats
     {
         return ServerStats::fetch($this);
