@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "63c5740ff8b8c8af692b97c1f26fb030",
+    "content-hash": "d3e6fb8ccc2f595ad17aeebf0c0d040c",
     "packages": [
         {
             "name": "brick/math",
@@ -5612,6 +5612,48 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "xpaw/php-minecraft-query",
+            "version": "4.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/xPaw/PHP-Minecraft-Query.git",
+                "reference": "c7257e7c3d18c14cd476910f1516f93f405f54ee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/xPaw/PHP-Minecraft-Query/zipball/c7257e7c3d18c14cd476910f1516f93f405f54ee",
+                "reference": "c7257e7c3d18c14cd476910f1516f93f405f54ee",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "xPaw\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP library to query Minecraft servers",
+            "keywords": [
+                "minecraft"
+            ],
+            "support": {
+                "source": "https://github.com/xPaw/PHP-Minecraft-Query/tree/4.0.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/xPaw",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-06-18T13:18:40+00:00"
         }
     ],
     "packages-dev": [
@@ -7922,6 +7964,53 @@
                 }
             ],
             "time": "2023-09-05T04:34:51+00:00"
+        },
+        {
+            "name": "plannr/laravel-fast-refresh-database",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PlannrCrm/laravel-fast-refresh-database.git",
+                "reference": "55052efd70ea24fc29ba530bf2dd9b68e97592cd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PlannrCrm/laravel-fast-refresh-database/zipball/55052efd70ea24fc29ba530bf2dd9b68e97592cd",
+                "reference": "55052efd70ea24fc29ba530bf2dd9b68e97592cd",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "symfony/process": "^5.0|^6.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.13",
+                "orchestra/testbench": "^7.17",
+                "pestphp/pest": "^1.22",
+                "symfony/var-dumper": "^6.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Plannr\\Laravel\\FastRefreshDatabase\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sam Carré",
+                    "email": "29132017+Sammyjo20@users.noreply.github.com"
+                }
+            ],
+            "description": "Refresh your database faster than you've ever seen before 🚀",
+            "support": {
+                "issues": "https://github.com/PlannrCrm/laravel-fast-refresh-database/issues",
+                "source": "https://github.com/PlannrCrm/laravel-fast-refresh-database/tree/v1.0.2"
+            },
+            "time": "2023-01-05T10:19:20+00:00"
         },
         {
             "name": "psr/cache",
