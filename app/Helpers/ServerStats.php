@@ -29,6 +29,7 @@ class ServerStats
     {
     }
 
+    // TODO extract these two methods to helper
     public static function resolveSRV(string $address): string
     {
         if(ip2long($address) !== false) {
