@@ -21,5 +21,6 @@ Route::prefix('/servers')->name('servers.')->group(function () {
     Route::get('/', IndexServersController::class)->name('index');
     Route::get('/{server}', [ShowServerController::class, 'stats'])->name('show');
     Route::get('/{server}/favicon', [ShowServerController::class, 'favicon'])->name('favicon');
+    Route::get('/{server}/motd', [ShowServerController::class, 'motd'])->name('motd');
     Route::get('/{server}/votes', ShowServerVotesController::class)->name('show');
 });

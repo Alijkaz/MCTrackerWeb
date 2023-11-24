@@ -23,4 +23,13 @@ class ShowServerController extends Controller
 
         return Storage::response($path);
     }
+
+    public function motd(Server $server)
+    {
+        $path = "servers/$server->id/motd.png";
+
+        abort_if(! Storage::exists($path), 404);
+
+        return Storage::response($path);
+    }
 }

@@ -34,6 +34,7 @@ class TrackJob implements ShouldQueue, ShouldBeUnique
 
             // Store favicon on system
             $serverStats?->storeFavIcon();
+            $serverStats?->storeMOTD();
         }
     }
 

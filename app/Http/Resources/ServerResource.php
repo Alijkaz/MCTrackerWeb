@@ -19,16 +19,21 @@ class ServerResource extends JsonResource
         return [
             'name' => $this->resource->name,
             'description' => $this->resource->description,
+            'favicon' => route('servers.favicon', ['server' => $this->slug]),
+            'motd' => route('servers.motd', ['server' => $this->slug]),
             'address' => $this->resource->address,
             'ip' => $this->resource->ip,
             'country_code' => $this->resource->country_code,
             'region' => $this->resource->region,
             'up_from' => $this->resource->up_from,
             'latency' => $record?->latency ?: 0,
+            'version' => $record->version,
             'players' => [
                 'online' => $record?->players ?: 0,
-                'max' => $record?->max_players ?: 0
+                'max' => $record?->max_players ?: 0,
+                'record' => $this->resource->highestRecord()?->players ?: 0
             ],
+            'socials' => $this->resource->getSocials(),
             'gamemodes' => $this->resource->gamemodes ? json_decode($this->resource->gamemodes) : []
         ];
     }

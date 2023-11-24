@@ -33,7 +33,7 @@ class Handler extends ExceptionHandler
     {
         if ($request->is('api/*') || $request->is('api')) {
             if ($e instanceof NotFoundHttpException || $e instanceof ModelNotFoundException) {
-                return response()->json(['ok' => false, 'message' => '404 Not Found'], 404);
+                return response('', 404);
             }
         }
 

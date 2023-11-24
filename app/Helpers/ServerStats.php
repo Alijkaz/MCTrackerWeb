@@ -5,6 +5,8 @@ namespace App\Helpers;
 use App\Models\GameMode;
 use App\Models\Server;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use JJG\Ping;
@@ -77,7 +79,9 @@ class ServerStats
         $minecraftPing = null;
         $context = ['server' => $server->name];
         $result = null;
-        $gameModes = GameMode::query()->get('name')->pluck('name');
+
+        $cacheTTL = app()->isProduction() ? now()->addHours() : 0;
+        $gameModes = Cache::remember('gamemodes', $cacheTTL, fn () => GameMode::query()->get('name')->pluck('name'));
 
         try {
             retry($retries, function () use ($server, $gameModes, &$minecraftPing, &$result) {
@@ -164,11 +168,30 @@ class ServerStats
         if ($base64_image) {
             @list($type, $file_data) = explode(';', $base64_image);
             @list(, $file_data) = explode(',', $file_data);
-            $favPath = "servers/{$this->getServer()->id}/favicon.png";
+            $favPath = "servers/{$this->getServer()->slug}/favicon.png";
             Storage::put($favPath, base64_decode($file_data));
 
             return $favPath;
         }
+
+        return null;
+    }
+
+    public function storeMOTD(): ?string
+    {
+        $server = $this->getServer();
+
+        $motdUrl = "http://status.mclive.eu/$server->name/$this->address/$this->port/banner.png";
+
+        try {
+            $motd = file_get_contents($motdUrl);
+            $motdPath = "servers/{$server->slug}/motd.png";
+            Storage::put($motdPath, $motd);
+        } catch (\Exception $exception) {
+            Log::warning('Storing motd for server failed: ' . $exception->getMessage(), ['url' => $motdUrl, 'server' => $server->id]);
+        }
+
+
 
         return null;
     }
