@@ -24,7 +24,7 @@ class ServerStats
         private readonly int    $maxPlayers,
         private readonly int    $latency,
         private readonly string $version,
-        private readonly string $favIcon,
+        private readonly ?string $favIcon,
         private readonly array  $gameModes,
         private readonly Server $server
     )
